@@ -10,7 +10,7 @@ const AdminUsers: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navi
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
     const [showCreate, setShowCreate] = useState(false);
-    const [createForm, setCreateForm] = useState({ name: '', email: '', password: '', role: 'student', department: '' });
+    const [createForm, setCreateForm] = useState({ name: '', email: '', password: '', role: 'STUDENT', department: '' });
     const [formLoading, setFormLoading] = useState(false);
 
     useEffect(() => { load(); }, []);
@@ -29,7 +29,7 @@ const AdminUsers: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navi
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault(); setFormLoading(true);
-        try { await usersAPI.create(createForm); setShowCreate(false); setCreateForm({ name: '', email: '', password: '', role: 'student', department: '' }); load(); }
+        try { await usersAPI.create(createForm); setShowCreate(false); setCreateForm({ name: '', email: '', password: '', role: 'STUDENT', department: '' }); load(); }
         catch (err: any) { alert(err.response?.data?.message || 'Failed'); }
         finally { setFormLoading(false); }
     };
@@ -37,8 +37,8 @@ const AdminUsers: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navi
     // Admins can only create instructors and students
     const isSuperAdmin = me?.role === UserRole.SUPER_ADMIN;
     const allowedRoles = isSuperAdmin
-        ? [{ v: 'admin', l: 'Admin' }, { v: 'instructor', l: 'Instructor' }, { v: 'student', l: 'Student' }]
-        : [{ v: 'instructor', l: 'Instructor' }, { v: 'student', l: 'Student' }];
+        ? [{ v: 'ADMIN', l: 'Admin' }, { v: 'INSTRUCTOR', l: 'Instructor' }, { v: 'STUDENT', l: 'Student' }]
+        : [{ v: 'INSTRUCTOR', l: 'Instructor' }, { v: 'STUDENT', l: 'Student' }];
 
     return (
         <div className="space-y-8">
@@ -58,9 +58,9 @@ const AdminUsers: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navi
                 </div>
                 <select value={roleFilter} onChange={e => { setRoleFilter(e.target.value); }} className="px-4 py-3 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm">
                     <option value="">All Roles</option>
-                    <option value="instructor">Instructors</option>
-                    <option value="student">Students</option>
-                    {isSuperAdmin && <option value="admin">Admins</option>}
+                    <option value="INSTRUCTOR">Instructors</option>
+                    <option value="STUDENT">Students</option>
+                    {isSuperAdmin && <option value="ADMIN">Admins</option>}
                 </select>
                 <button onClick={load} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-sm">Search</button>
             </div>
@@ -81,15 +81,15 @@ const AdminUsers: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navi
                                                 <div><p className="font-bold text-slate-900 text-sm">{u.name}</p><p className="text-xs text-slate-500">{u.email}</p></div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4"><span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${u.role === 'super_admin' ? 'bg-rose-50 text-rose-600' :
-                                                u.role === 'admin' ? 'bg-amber-50 text-amber-600' :
-                                                    u.role === 'instructor' ? 'bg-violet-50 text-violet-600' :
-                                                        'bg-indigo-50 text-indigo-600'
-                                            }`}>{u.role === 'super_admin' ? <Shield className="w-3 h-3" /> : null}{u.role.replace('_', ' ')}</span></td>
+                                        <td className="px-6 py-4"><span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${u.role === 'SUPER_ADMIN' ? 'bg-rose-50 text-rose-600' :
+                                            u.role === 'ADMIN' ? 'bg-amber-50 text-amber-600' :
+                                                u.role === 'INSTRUCTOR' ? 'bg-violet-50 text-violet-600' :
+                                                    'bg-indigo-50 text-indigo-600'
+                                            }`}>{u.role === 'SUPER_ADMIN' ? <Shield className="w-3 h-3" /> : null}{u.role.replace('_', ' ')}</span></td>
                                         <td className="px-6 py-4 text-sm text-slate-500">{u.department || '—'}</td>
                                         <td className="px-6 py-4">{u.isActive ? <span className="flex items-center gap-1 text-xs text-emerald-600 font-bold"><CheckCircle className="w-3.5 h-3.5" /> Active</span> : <span className="flex items-center gap-1 text-xs text-red-500 font-bold"><XCircle className="w-3.5 h-3.5" /> Disabled</span>}</td>
                                         <td className="px-6 py-4 text-right">
-                                            {u.role !== 'super_admin' && (
+                                            {u.role !== 'SUPER_ADMIN' && (
                                                 <button onClick={() => toggleStatus(u._id)} className={`text-xs font-bold px-4 py-1.5 rounded-lg transition-colors ${u.isActive ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}>
                                                     {u.isActive ? 'Disable' : 'Enable'}
                                                 </button>

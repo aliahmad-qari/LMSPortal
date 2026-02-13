@@ -6,23 +6,24 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { 
-    type: String, 
-    enum: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'STUDENT'], 
-    default: 'STUDENT' 
+  role: {
+    type: String,
+    enum: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'STUDENT'],
+    default: 'STUDENT',
+    uppercase: true
   },
   isActive: { type: Boolean, default: true },
   avatar: { type: String },
   department: { type: String }
 }, { timestamps: true });
 
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-UserSchema.methods.comparePassword = async function(candidatePassword) {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

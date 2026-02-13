@@ -169,9 +169,9 @@ const AdminPage: React.FC<{ navigate: (r: string) => void }> = ({ navigate }) =>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'INSTRUCTOR' ? 'bg-indigo-50 text-indigo-600' :
-                          u.role === 'STUDENT' ? 'bg-slate-100 text-slate-600' :
-                            u.role === 'ADMIN' ? 'bg-amber-50 text-amber-600' :
-                              'bg-red-50 text-red-600'
+                        u.role === 'STUDENT' ? 'bg-slate-100 text-slate-600' :
+                          u.role === 'ADMIN' ? 'bg-amber-50 text-amber-600' :
+                            'bg-red-50 text-red-600'
                         }`}>
                         {u.role.replace('_', ' ')}
                       </span>

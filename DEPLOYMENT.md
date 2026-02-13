@@ -14,7 +14,7 @@ Follow these steps to deploy your Smart University LMS to production.
 4.  **Environment Variables**:
     - `MONGO_URI`: `mongodb+srv://ali-islamic:xlUR8DWnt7jpcw2M@cluster0.0nsjvku.mongodb.net/Lms?retryWrites=true&w=majority`
     - `JWT_SECRET`: (Create a secure random string, e.g., `a7k2_9Js_!m1P`)
-    - `CLIENT_URL`: `https://your-frontend-url.vercel.app` (The URL Vercel gives you)
+    - `CLIENT_URL`: `https://lms-portal-black-six.vercel.app`
     - `PORT`: `10000` (Render will usually set this automatically)
 
 ---
@@ -29,11 +29,15 @@ Follow these steps to deploy your Smart University LMS to production.
     - **Build Command**: `npm run build`
     - **Output Directory**: `dist`
 4.  **Environment Variables**:
-    - `VITE_API_URL`: `https://your-backend-url.onrender.com/api` (The URL Render gives you)
+    - `VITE_API_URL`: `https://lmsportal-9e5c.onrender.com/api`
 
 ---
 
 ## 3. Post-Deployment Checks
 - Once Render is up, copy its URL and update `VITE_API_URL` in Vercel.
 - Once Vercel is up, copy its URL and update `CLIENT_URL` in Render.
-- Restart the services if needed.
+- **IMPORTANT**: If changes don't take effect immediately, push all latest code changes to your GitHub and ensure Render/Vercel redeploys.
+
+## 4. Troubleshooting
+- **Login Failed**: Ensure you have run `npm run seed` to create the SuperAdmin.
+- **Role Issues**: All roles are now forced to UPPERCASE (e.g., ADMIN, INSTRUCTOR). The system now automatically handles this.
