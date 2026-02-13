@@ -1,0 +1,8 @@
+{
+  "name": "Smart University LMS",
+  "description": "A fully functional Learning Management System with role-based access control, real-time chat, video conferencing, and course management features for Students, Instructors, Admins, and Super Admins.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
