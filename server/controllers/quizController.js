@@ -149,17 +149,28 @@ exports.submitQuiz = async (req, res) => {
             return res.status(400).json({ message: 'You have already attempted this quiz' });
         }
 
-        const { responses } = req.body; // Array of { questionId, selectedOption }
+        const { responses } = req.body;
+
+        if (!responses || !Array.isArray(responses)) {
+            return res.status(400).json({ message: 'Invalid responses format' });
+        }
 
         let score = 0;
         const processedResponses = [];
 
         responses.forEach(response => {
-            const question = quiz.questions.find(q => q._id.toString() === response.questionId);
+            // Find question safely
+            const question = quiz.questions.find(q => q && q._id.toString() === response.questionId);
+
             if (question) {
-                if (parseInt(response.selectedOption) === parseInt(question.correctAnswer)) {
-                    score += question.marks;
+                // Ensure we compare valid numbers or strings
+                const selectedOptIndex = parseInt(response.selectedOption);
+                const correctOptIndex = parseInt(question.correctAnswer);
+
+                if (!isNaN(selectedOptIndex) && !isNaN(correctOptIndex) && selectedOptIndex === correctOptIndex) {
+                    score += (question.marks || 1);
                 }
+
                 processedResponses.push({
                     questionId: question._id,
                     selectedOption: response.selectedOption

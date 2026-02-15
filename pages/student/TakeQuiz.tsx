@@ -71,6 +71,21 @@ const TakeQuiz: React.FC<TakeQuizProps> = ({ quizId, onClose }) => {
 
     if (!quiz) return null;
 
+    if (!quiz.questions || quiz.questions.length === 0) {
+        return (
+            <div className="fixed inset-0 bg-slate-50 z-50 flex flex-col items-center justify-center p-6 text-center">
+                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 max-w-md w-full">
+                    <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">No Questions Found</h2>
+                    <p className="text-slate-500 mb-6">This quiz doesn't have any questions yet. Please ask your instructor to add some.</p>
+                    <button onClick={onClose} className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     const currentQ = quiz.questions[activeQuestion];
     const progress = ((activeQuestion + 1) / quiz.questions.length) * 100;
     const formatTime = (s: number) => {

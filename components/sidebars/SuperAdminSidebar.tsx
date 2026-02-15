@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Users, BookOpen, Settings,
-    GraduationCap, X, ShieldAlert, BarChart3, Database
+    GraduationCap, X, ShieldAlert, BarChart3, Database, Shield, Video
 } from 'lucide-react';
 
 interface Props {
@@ -67,8 +67,8 @@ const SuperAdminSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, se
                                 key={item.id}
                                 onClick={() => { navigate(item.id); setIsOpen(false); }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentRoute === item.id
-                                        ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25 shadow-lg shadow-rose-900/10'
-                                        : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                                    ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25 shadow-lg shadow-rose-900/10'
+                                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-rose-400' : 'text-slate-600'}`} />

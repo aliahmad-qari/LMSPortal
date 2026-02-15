@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
-    LayoutDashboard, BookOpen, MessageSquare, Video,
-    GraduationCap, X, ClipboardCheck, PlusCircle
+    LayoutDashboard, BookOpen, PlusCircle, MessageSquare, Video,
+    FileText, CheckSquare, BarChart3, Megaphone, Database,
+    GraduationCap, X, ClipboardCheck
 } from 'lucide-react';
 
 interface Props {
@@ -20,8 +21,11 @@ const InstructorSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, se
         { id: 'my-courses', label: 'My Courses', icon: BookOpen },
         { id: 'create-course', label: 'Create Course', icon: PlusCircle },
         { id: 'assignments', label: 'Assignments', icon: ClipboardCheck },
-        { id: 'quizzes', label: 'Quizzes', icon: BookOpen }, // Reusing BookOpen or specialized icon if available
+        { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
         { id: 'submissions', label: 'Submissions', icon: ClipboardCheck },
+        { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+        { id: 'announcements', label: 'Announcements', icon: Megaphone },
+        { id: 'question-bank', label: 'Question Bank', icon: Database },
         { id: 'chat', label: 'Messages', icon: MessageSquare },
         { id: 'video', label: 'Live Classes', icon: Video },
     ];

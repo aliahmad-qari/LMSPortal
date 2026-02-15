@@ -65,11 +65,11 @@ const StudentSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIs
                                 key={item.id}
                                 onClick={() => { navigate(item.id); setIsOpen(false); }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentRoute === item.id
-                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/30'
+                                    ? 'bg-indigo-500/20 text-white border border-indigo-500/30 shadow-lg shadow-indigo-900/20'
                                     : 'text-indigo-200 hover:bg-indigo-800/50 hover:text-white'
                                     }`}
                             >
-                                <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-indigo-200' : 'text-indigo-400'}`} />
+                                <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-indigo-300' : 'text-indigo-400'}`} />
                                 <span className="font-medium text-sm">{item.label}</span>
                             </button>
                         ))}

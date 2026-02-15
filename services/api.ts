@@ -121,6 +121,48 @@ export const messagesAPI = {
     getRooms: () => api.get('/messages'),
 };
 
+// ==================== SUPER ADMIN ====================
+export const superAdminAPI = {
+    getLogs: (params?: { page?: number; limit?: number }) => api.get('/superadmin/logs', { params }),
+    getStats: () => api.get('/superadmin/stats'),
+};
+
+// ==================== ADMIN FEATURES ====================
+export const adminFeaturesAPI = {
+    getPendingCourses: () => api.get('/admin/courses/pending'),
+    approveCourse: (id: string) => api.put(`/admin/courses/${id}/approve`),
+    rejectCourse: (id: string, reason: string) => api.put(`/admin/courses/${id}/reject`, { reason }),
+    getCategories: () => api.get('/categories'),
+    createCategory: (data: { name: string; description?: string }) => api.post('/categories', data),
+    deleteCategory: (id: string) => api.delete(`/categories/${id}`),
+    getTickets: () => api.get('/tickets'), // Admin view
+    replyTicket: (id: string, data: { message: string; status?: string }) => api.put(`/tickets/${id}/reply`, data),
+};
+
+// ==================== INSTRUCTOR FEATURES ====================
+export const instructorFeaturesAPI = {
+    getAnalytics: () => api.get('/instructor/analytics'),
+    createAnnouncement: (data: { courseId: string; title: string; content: string }) => api.post('/announcements', data),
+    getAnnouncements: () => api.get('/announcements'),
+    addToQuestionBank: (data: any) => api.post('/question-bank', data),
+    getQuestionBank: () => api.get('/question-bank'),
+};
+
+// ==================== STUDENT FEATURES ====================
+export const studentFeaturesAPI = {
+    getResults: () => api.get('/student/results'),
+    getCertificates: () => api.get('/certificates'),
+    generateCertificate: (courseId: string) => api.post('/certificates/generate', { courseId }),
+    createTicket: (data: { subject: string; message: string }) => api.post('/tickets', data),
+    getMyTickets: () => api.get('/tickets/my-tickets'),
+};
+
+// ==================== COMMON ====================
+export const commonAPI = {
+    getNotifications: () => api.get('/notifications'),
+    markNotificationRead: (id: string) => api.put(`/notifications/${id}/read`),
+};
+
 export const SERVER_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace('/api', '');
 
 export default api;

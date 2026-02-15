@@ -1,9 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import {
-    LayoutDashboard, Users, BookOpen,
-    GraduationCap, X, BarChart3, Shield
-} from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, Settings, FileText, Video, Ticket, Tag, BarChart3, Shield, X } from 'lucide-react';
 
 interface Props {
     currentRoute: string;
@@ -19,6 +16,9 @@ const AdminSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIsOp
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'users', label: 'User Management', icon: Users },
         { id: 'courses', label: 'Course Overview', icon: BookOpen },
+        { id: 'approvals', label: 'Approvals', icon: BookOpen },
+        { id: 'categories', label: 'Categories', icon: Tag },
+        { id: 'support', label: 'Support', icon: Ticket },
         { id: 'reports', label: 'Reports', icon: BarChart3 },
     ];
 
@@ -62,8 +62,8 @@ const AdminSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIsOp
                                 key={item.id}
                                 onClick={() => { navigate(item.id); setIsOpen(false); }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentRoute === item.id
-                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg shadow-amber-900/10'
-                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg shadow-amber-900/10'
+                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-amber-400' : 'text-slate-500'}`} />

@@ -5,6 +5,7 @@ import InstructorSidebar from './sidebars/InstructorSidebar';
 import AdminSidebar from './sidebars/AdminSidebar';
 import SuperAdminSidebar from './sidebars/SuperAdminSidebar';
 import { LogOut, Bell, Search, Menu } from 'lucide-react';
+import NotificationDropdown from './NotificationDropdown';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -75,10 +76,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate }) => 
           </div>
 
           <div className="flex items-center gap-2 sm:gap-6">
-            <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            <NotificationDropdown />
 
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right hidden sm:block">
