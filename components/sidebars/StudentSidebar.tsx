@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, BookOpen, MessageSquare, Video,
-    GraduationCap, X, Compass, Library
+    GraduationCap, X, Compass, Library, ClipboardCheck
 } from 'lucide-react';
 
 interface Props {
@@ -19,6 +19,8 @@ const StudentSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIs
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'browse-courses', label: 'Browse Courses', icon: Compass },
         { id: 'my-courses', label: 'My Courses', icon: Library },
+        { id: 'assignments', label: 'Assignments', icon: ClipboardCheck },
+        { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
         { id: 'chat', label: 'Messages', icon: MessageSquare },
         { id: 'video', label: 'Live Classes', icon: Video },
     ];
@@ -63,8 +65,8 @@ const StudentSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIs
                                 key={item.id}
                                 onClick={() => { navigate(item.id); setIsOpen(false); }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentRoute === item.id
-                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/30'
-                                        : 'text-indigo-200 hover:bg-indigo-800/50 hover:text-white'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/30'
+                                    : 'text-indigo-200 hover:bg-indigo-800/50 hover:text-white'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-indigo-200' : 'text-indigo-400'}`} />

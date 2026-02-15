@@ -23,9 +23,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentRoute, navigate, isOpen, setIs
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.STUDENT, UserRole.INSTRUCTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN] },
+    { id: 'assignments', label: 'Assignments', icon: BookOpen, roles: [UserRole.STUDENT, UserRole.INSTRUCTOR] },
+    { id: 'quizzes', label: 'Quizzes', icon: ShieldCheck, roles: [UserRole.STUDENT, UserRole.INSTRUCTOR] },
     { id: 'chat', label: 'Messages', icon: MessageSquare, roles: [UserRole.STUDENT, UserRole.INSTRUCTOR] },
     { id: 'video', label: 'Live Classes', icon: Video, roles: [UserRole.STUDENT, UserRole.INSTRUCTOR] },
-    { id: 'admin', label: 'University Mgmt', icon: ShieldCheck, roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN] },
+    { id: 'admin', label: 'University Mgmt', icon: GraduationCap, roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN] },
   ];
 
   const filteredItems = menuItems.filter(item => user?.role && item.roles.includes(user.role));

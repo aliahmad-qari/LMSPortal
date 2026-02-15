@@ -13,6 +13,12 @@ import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import InstructorCourseView from './pages/instructor/InstructorCourseView';
 import InstructorCreateCourse from './pages/instructor/InstructorCreateCourse';
 import InstructorSubmissions from './pages/instructor/InstructorSubmissions';
+import InstructorAssignments from './pages/instructor/InstructorAssignments';
+import InstructorQuizzes from './pages/instructor/InstructorQuizzes';
+import InstructorQuizResults from './pages/instructor/InstructorQuizResults';
+import StudentAssignments from './pages/student/StudentAssignments';
+import StudentQuizzes from './pages/student/StudentQuizzes';
+import TakeQuiz from './pages/student/TakeQuiz';
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -64,6 +70,9 @@ export const AppRouter: React.FC = () => {
       case 'browse-courses': return <StudentCourses navigate={navigate} />;
       case 'my-courses': return <StudentCourses navigate={navigate} />;
       case 'course-view': return <StudentCourseView courseId={routeParams.courseId} navigate={navigate} />;
+      case 'assignments': return <StudentAssignments />;
+      case 'quizzes': return <StudentQuizzes navigate={navigate} />;
+      case 'take-quiz': return <TakeQuiz quizId={routeParams.quizId} onClose={() => navigate('quizzes')} />;
       case 'chat': return <ChatPage navigate={navigate} initialRoomId={routeParams.roomId} />;
       case 'video': return <VideoCallPage navigate={navigate} courseId={routeParams.courseId} />;
       default: return <StudentDashboard navigate={navigate} />;
@@ -77,6 +86,9 @@ export const AppRouter: React.FC = () => {
       case 'my-courses': return <InstructorDashboard navigate={navigate} />;
       case 'course-view': return <InstructorCourseView courseId={routeParams.courseId} navigate={navigate} />;
       case 'create-course': return <InstructorCreateCourse navigate={navigate} />;
+      case 'assignments': return <InstructorAssignments navigate={navigate} />;
+      case 'quizzes': return <InstructorQuizzes navigate={navigate} />;
+      case 'quiz-results': return <InstructorQuizResults quizId={routeParams.quizId} quizTitle={routeParams.quizTitle} navigate={navigate} />;
       case 'submissions': return <InstructorSubmissions assignmentId={routeParams.assignmentId} assignmentTitle={routeParams.assignmentTitle} navigate={navigate} />;
       case 'chat': return <ChatPage navigate={navigate} initialRoomId={routeParams.roomId} />;
       case 'video': return <VideoCallPage navigate={navigate} courseId={routeParams.courseId} />;

@@ -83,8 +83,15 @@ export const lecturesAPI = {
 // ==================== ASSIGNMENTS ====================
 export const assignmentsAPI = {
     getByCourse: (courseId: string) => api.get(`/assignments/course/${courseId}`),
-    create: (data: { title: string; description: string; courseId: string; dueDate: string; totalMarks?: number }) =>
-        api.post('/assignments', data),
+    create: (formData: FormData) =>
+        api.post('/assignments', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+    update: (id: string, formData: FormData) =>
+        api.put(`/assignments/${id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+    delete: (id: string) => api.delete(`/assignments/${id}`),
     submit: (id: string, formData: FormData) =>
         api.post(`/assignments/${id}/submit`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
@@ -93,6 +100,19 @@ export const assignmentsAPI = {
     getMySubmission: (id: string) => api.get(`/assignments/${id}/my-submission`),
     grade: (submissionId: string, data: { grade: number; feedback?: string }) =>
         api.put(`/assignments/submissions/${submissionId}/grade`, data),
+};
+
+// ==================== QUIZZES ====================
+export const quizzesAPI = {
+    getByCourse: (courseId: string) => api.get(`/quizzes/course/${courseId}`),
+    getById: (id: string) => api.get(`/quizzes/${id}`),
+    create: (data: { title: string; description?: string; courseId: string; timeLimit?: number }) =>
+        api.post('/quizzes', data),
+    addQuestion: (id: string, data: any) => api.post(`/quizzes/${id}/questions`, data),
+    delete: (id: string) => api.delete(`/quizzes/${id}`),
+    submit: (id: string, data: { responses: any[] }) => api.post(`/quizzes/${id}/submit`, data),
+    getAttempts: (id: string) => api.get(`/quizzes/${id}/attempts`),
+    getMyAttempts: (id: string) => api.get(`/quizzes/${id}/my-attempts`),
 };
 
 // ==================== MESSAGES ====================

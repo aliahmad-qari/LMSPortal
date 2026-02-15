@@ -19,6 +19,8 @@ const InstructorSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, se
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'my-courses', label: 'My Courses', icon: BookOpen },
         { id: 'create-course', label: 'Create Course', icon: PlusCircle },
+        { id: 'assignments', label: 'Assignments', icon: ClipboardCheck },
+        { id: 'quizzes', label: 'Quizzes', icon: BookOpen }, // Reusing BookOpen or specialized icon if available
         { id: 'submissions', label: 'Submissions', icon: ClipboardCheck },
         { id: 'chat', label: 'Messages', icon: MessageSquare },
         { id: 'video', label: 'Live Classes', icon: Video },
@@ -64,8 +66,8 @@ const InstructorSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, se
                                 key={item.id}
                                 onClick={() => { navigate(item.id); setIsOpen(false); }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentRoute === item.id
-                                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-950/30'
-                                        : 'text-violet-200 hover:bg-violet-800/50 hover:text-white'
+                                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-950/30'
+                                    : 'text-violet-200 hover:bg-violet-800/50 hover:text-white'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${currentRoute === item.id ? 'text-violet-200' : 'text-violet-400'}`} />

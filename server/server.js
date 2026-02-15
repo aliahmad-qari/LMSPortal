@@ -13,6 +13,7 @@ const userRoutes = require('./routes/userRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const lectureRoutes = require('./routes/lectureRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
+const quizRoutes = require('./routes/quizRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 
 // Import models
@@ -90,6 +91,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/assignments', assignmentRoutes);
+app.use('/api/quizzes', quizRoutes);
 app.use('/api/messages', messageRoutes);
 
 // Health check
