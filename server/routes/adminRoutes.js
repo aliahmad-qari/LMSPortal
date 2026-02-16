@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/auth');
 const { getPendingCourses, approveCourse, rejectCourse } = require('../controllers/adminController');
 
 const router = express.Router();

@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/auth');
 const { getCourseAnalytics } = require('../controllers/instructorController');
 const { getResults } = require('../controllers/studentController');
 

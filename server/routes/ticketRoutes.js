@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/auth');
 const { getTickets, replyTicket } = require('../controllers/adminController');
 const { createTicket, getMyTickets } = require('../controllers/studentController');
 
