@@ -3,19 +3,21 @@ import { useAuth, UserRole } from '../context/AuthContext';
 import StudentSidebar from './sidebars/StudentSidebar';
 import InstructorSidebar from './sidebars/InstructorSidebar';
 import AdminSidebar from './sidebars/AdminSidebar';
-import SuperAdminSidebar from './sidebars/SuperAdminSidebar';
-import { LogOut, Bell, Search, Menu } from 'lucide-react';
+import { LogOut, Bell, Search, Menu, ArrowLeft } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 
 interface LayoutProps {
   children: React.ReactNode;
   currentRoute: string;
   navigate: (route: string, params?: any) => void;
+  onBack?: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate }) => {
+const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate, onBack }) => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const showBackButton = currentRoute !== 'dashboard';
 
   // Pick sidebar by role
   const renderSidebar = () => {
@@ -24,7 +26,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate }) => 
       case UserRole.STUDENT: return <StudentSidebar {...sidebarProps} />;
       case UserRole.INSTRUCTOR: return <InstructorSidebar {...sidebarProps} />;
       case UserRole.ADMIN: return <AdminSidebar {...sidebarProps} />;
-      case UserRole.SUPER_ADMIN: return <SuperAdminSidebar {...sidebarProps} />;
       default: return <StudentSidebar {...sidebarProps} />;
     }
   };
@@ -34,21 +35,18 @@ const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate }) => 
     [UserRole.STUDENT]: 'focus:ring-indigo-500',
     [UserRole.INSTRUCTOR]: 'focus:ring-violet-500',
     [UserRole.ADMIN]: 'focus:ring-amber-500',
-    [UserRole.SUPER_ADMIN]: 'focus:ring-rose-500',
   }[user?.role || UserRole.STUDENT];
 
   const roleColor = {
     [UserRole.STUDENT]: 'text-indigo-600',
     [UserRole.INSTRUCTOR]: 'text-violet-600',
     [UserRole.ADMIN]: 'text-amber-600',
-    [UserRole.SUPER_ADMIN]: 'text-rose-600',
   }[user?.role || UserRole.STUDENT];
 
   const avatarBg = {
     [UserRole.STUDENT]: 'bg-indigo-100 text-indigo-600',
     [UserRole.INSTRUCTOR]: 'bg-violet-100 text-violet-600',
     [UserRole.ADMIN]: 'bg-amber-100 text-amber-600',
-    [UserRole.SUPER_ADMIN]: 'bg-rose-100 text-rose-600',
   }[user?.role || UserRole.STUDENT];
 
   return (
@@ -65,6 +63,15 @@ const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate }) => 
             >
               <Menu className="w-6 h-6 text-slate-600" />
             </button>
+            {showBackButton && onBack && (
+              <button
+                onClick={onBack}
+                className="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium text-sm transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+            )}
             <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input

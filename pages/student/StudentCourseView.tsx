@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { coursesAPI, lecturesAPI, assignmentsAPI, SERVER_URL } from '../../services/api';
+import { coursesAPI, lecturesAPI, assignmentsAPI, liveClassAPI, SERVER_URL } from '../../services/api';
 import {
     Play, FileText, ChevronLeft, Download, Upload,
-    Loader2, Clock, Video, BookOpen, X
+    Loader2, Clock, Video, BookOpen, X, ExternalLink, Radio
 } from 'lucide-react';
 
 const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: any) => void }> = ({ courseId, navigate }) => {
@@ -18,8 +18,9 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
     const [showSubmit, setShowSubmit] = useState<string | null>(null);
     const [submissionFile, setSubmissionFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
+    const [liveClass, setLiveClass] = useState<any>(null);
 
-    useEffect(() => { loadCourse(); }, [courseId]);
+    useEffect(() => { loadCourse(); loadLiveClass(); }, [courseId]);
 
     const loadCourse = async () => {
         setIsLoading(true);
@@ -32,6 +33,13 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
             if (res.data.lectures.length > 0) setActiveLecture(res.data.lectures[0]);
         } catch (err) { console.error(err); }
         finally { setIsLoading(false); }
+    };
+
+    const loadLiveClass = async () => {
+        try {
+            const res = await liveClassAPI.getByCourse(courseId);
+            setLiveClass(res.data);
+        } catch (err) { console.error(err); }
     };
 
     const handleEnroll = async () => {
@@ -114,6 +122,21 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
 
                 {/* Sidebar */}
                 <div className="space-y-6">
+                    {/* Live Class Card */}
+                    {isEnrolled && liveClass && (
+                        <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-6 rounded-3xl text-white shadow-2xl">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Radio className="w-5 h-5 animate-pulse" />
+                                <span className="text-sm font-bold uppercase tracking-wider">Live Now</span>
+                            </div>
+                            <h3 className="text-lg font-bold mb-2">Live Class Active</h3>
+                            <p className="text-sm text-rose-100 mb-4">Join the live session on {liveClass.platform}</p>
+                            <a href={liveClass.meetingLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white text-rose-600 px-4 py-3 rounded-xl font-bold hover:bg-rose-50 transition-all">
+                                <ExternalLink className="w-4 h-4" /> Join Live Class
+                            </a>
+                        </div>
+                    )}
+
                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                         <h3 className="text-lg font-bold text-slate-900 mb-4">Lectures ({lectures.length})</h3>
                         {lectures.length === 0 ? <p className="text-slate-500 text-sm">No lectures yet</p> : (

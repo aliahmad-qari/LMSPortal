@@ -9,34 +9,20 @@ async function seed() {
         await mongoose.connect(MONGO_URI);
         console.log('Connected to MongoDB');
 
-        // Create Super Admin
-        const existingSuperAdmin = await User.findOne({ role: 'SUPER_ADMIN' });
-        if (!existingSuperAdmin) {
-            await User.create({
-                name: 'Super Admin',
-                email: 'admin@lms.com',
-                password: 'admin123',
-                role: 'SUPER_ADMIN',
-                department: 'Administration',
-                isActive: true
-            });
-            console.log('Super Admin created: admin@lms.com / admin123');
-        } else {
-            console.log('Super Admin already exists:', existingSuperAdmin.email);
-        }
-
         // Create a demo Admin
-        const existingAdmin = await User.findOne({ email: 'demoadmin@lms.com' });
+        const existingAdmin = await User.findOne({ email: 'admin@lms.com' });
         if (!existingAdmin) {
             await User.create({
-                name: 'Demo Admin',
-                email: 'demoadmin@lms.com',
+                name: 'Admin',
+                email: 'admin@lms.com',
                 password: 'admin123',
                 role: 'ADMIN',
                 department: 'Administration',
                 isActive: true
             });
-            console.log('Demo Admin created: demoadmin@lms.com / admin123');
+            console.log('Admin created: admin@lms.com / admin123');
+        } else {
+            console.log('Admin already exists:', existingAdmin.email);
         }
 
         // Create a demo Instructor
@@ -68,8 +54,7 @@ async function seed() {
         }
 
         console.log('\nSeed completed! You can now login with:');
-        console.log('  Super Admin: admin@lms.com / admin123');
-        console.log('  Admin: demoadmin@lms.com / admin123');
+        console.log('  Admin: admin@lms.com / admin123');
         console.log('  Instructor: instructor@lms.com / instructor123');
         console.log('  Student: student@lms.com / student123');
 

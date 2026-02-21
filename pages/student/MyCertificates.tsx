@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { studentFeaturesAPI } from '../../services/api';
 import { Award, Download, ShieldCheck } from 'lucide-react';
-import { Award, Download, ShieldCheck } from 'lucide-react';
 // import jsPDF from 'jspdf'; // Placeholder for future implementation
 
 const MyCertificates = () => {

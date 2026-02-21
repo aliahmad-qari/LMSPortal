@@ -121,12 +121,6 @@ export const messagesAPI = {
     getRooms: () => api.get('/messages'),
 };
 
-// ==================== SUPER ADMIN ====================
-export const superAdminAPI = {
-    getLogs: (params?: { page?: number; limit?: number }) => api.get('/superadmin/logs', { params }),
-    getStats: () => api.get('/superadmin/stats'),
-};
-
 // ==================== ADMIN FEATURES ====================
 export const adminFeaturesAPI = {
     getPendingCourses: () => api.get('/admin/courses/pending'),
@@ -161,6 +155,13 @@ export const studentFeaturesAPI = {
 export const commonAPI = {
     getNotifications: () => api.get('/notifications'),
     markNotificationRead: (id: string) => api.put(`/notifications/${id}/read`),
+};
+
+// ==================== LIVE CLASSES ====================
+export const liveClassAPI = {
+    create: (data: { courseId: string; meetingLink: string; platform?: string }) => api.post('/live-classes', data),
+    getByCourse: (courseId: string) => api.get(`/live-classes/course/${courseId}`),
+    end: (id: string) => api.put(`/live-classes/${id}/end`),
 };
 
 export const SERVER_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace('/api', '');

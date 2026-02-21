@@ -4,8 +4,8 @@ const { getPendingCourses, approveCourse, rejectCourse } = require('../controlle
 
 const router = express.Router();
 
-router.get('/courses/pending', protect, authorize('ADMIN', 'SUPER_ADMIN'), getPendingCourses);
-router.put('/courses/:id/approve', protect, authorize('ADMIN', 'SUPER_ADMIN'), approveCourse);
-router.put('/courses/:id/reject', protect, authorize('ADMIN', 'SUPER_ADMIN'), rejectCourse);
+router.get('/courses/pending', protect, authorize('ADMIN'), getPendingCourses);
+router.put('/courses/:id/approve', protect, authorize('ADMIN'), approveCourse);
+router.put('/courses/:id/reject', protect, authorize('ADMIN'), rejectCourse);
 
 module.exports = router;

@@ -143,7 +143,7 @@ router.put('/:id', protect, authorize('INSTRUCTOR'), async (req, res) => {
 });
 
 // Delete course
-router.delete('/:id', protect, authorize('INSTRUCTOR', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', protect, authorize('INSTRUCTOR', 'ADMIN'), async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
         if (!course) {

@@ -6,8 +6,8 @@ const { createTicket, getMyTickets } = require('../controllers/studentController
 const router = express.Router();
 
 // Admin routes
-router.get('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), getTickets);
-router.put('/:id/reply', protect, authorize('ADMIN', 'SUPER_ADMIN'), replyTicket);
+router.get('/', protect, authorize('ADMIN'), getTickets);
+router.put('/:id/reply', protect, authorize('ADMIN'), replyTicket);
 
 // Student routes
 router.post('/', protect, authorize('STUDENT'), createTicket);

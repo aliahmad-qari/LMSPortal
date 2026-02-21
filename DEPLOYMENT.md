@@ -39,5 +39,5 @@ Follow these steps to deploy your Smart University LMS to production.
 - **IMPORTANT**: If changes don't take effect immediately, push all latest code changes to your GitHub and ensure Render/Vercel redeploys.
 
 ## 4. Troubleshooting
-- **Login Failed**: Ensure you have run `npm run seed` to create the SuperAdmin.
+- **Login Failed**: Ensure you have run `npm run seed` to create the Admin user.
 - **Role Issues**: All roles are now forced to UPPERCASE (e.g., ADMIN, INSTRUCTOR). The system now automatically handles this.

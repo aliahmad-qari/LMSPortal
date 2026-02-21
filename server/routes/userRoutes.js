@@ -4,8 +4,8 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const { protect, authorize } = require('../middleware/auth');
 
-// Get all users (admin, superadmin)
-router.get('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+// Get all users (admin)
+router.get('/', protect, authorize('ADMIN'), async (req, res) => {
     try {
         const { role, search } = req.query;
         let query = {};
@@ -17,11 +17,9 @@ router.get('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) => 
             ];
         }
         // Admin can only see students and instructors
-        if (req.user.role === 'ADMIN') {
-            query.role = { $in: ['STUDENT', 'INSTRUCTOR'] };
-            if (role && ['STUDENT', 'INSTRUCTOR'].includes(role)) {
-                query.role = role;
-            }
+        query.role = { $in: ['STUDENT', 'INSTRUCTOR'] };
+        if (role && ['STUDENT', 'INSTRUCTOR'].includes(role)) {
+            query.role = role;
         }
         const users = await User.find(query).select('-password').sort({ createdAt: -1 });
         res.json(users);
@@ -30,8 +28,8 @@ router.get('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) => 
     }
 });
 
-// Get system analytics (superadmin)
-router.get('/analytics', protect, authorize('SUPER_ADMIN', 'ADMIN'), async (req, res) => {
+// Get system analytics (admin)
+router.get('/analytics', protect, authorize('ADMIN'), async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const totalStudents = await User.countDocuments({ role: 'STUDENT' });
@@ -55,20 +53,16 @@ router.get('/analytics', protect, authorize('SUPER_ADMIN', 'ADMIN'), async (req,
     }
 });
 
-// Create user (admin creates instructor, superadmin creates admin)
-router.post('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+// Create user (admin creates instructor and student)
+router.post('/', protect, authorize('ADMIN'), async (req, res) => {
     try {
         const { name, email, password, role, department } = req.body;
         if (!name || !email || !password || !role) {
             return res.status(400).json({ message: 'Name, email, password, and role are required' });
         }
         // Admin can only create INSTRUCTOR and STUDENT
-        if (req.user.role === 'ADMIN' && !['INSTRUCTOR', 'STUDENT'].includes(role)) {
+        if (!['INSTRUCTOR', 'STUDENT'].includes(role)) {
             return res.status(403).json({ message: 'Admins can only create Instructors and Students' });
-        }
-        // Super admin can create ADMIN
-        if (req.user.role === 'SUPER_ADMIN' && !['ADMIN', 'INSTRUCTOR', 'STUDENT'].includes(role)) {
-            return res.status(403).json({ message: 'Invalid role assignment' });
         }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -96,19 +90,15 @@ router.post('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) =>
 });
 
 // Toggle user status (enable/disable)
-router.put('/:id/toggle-status', protect, authorize('ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.put('/:id/toggle-status', protect, authorize('ADMIN'), async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        // Admin cannot disable other admins or super admins
-        if (req.user.role === 'ADMIN' && ['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
-            return res.status(403).json({ message: 'You cannot modify admin or super admin accounts' });
-        }
-        // Super admin cannot disable other super admins
-        if (req.user.role === 'SUPER_ADMIN' && user.role === 'SUPER_ADMIN' && user._id.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: 'Cannot disable another super admin' });
+        // Admin cannot disable other admins
+        if (user.role === 'ADMIN') {
+            return res.status(403).json({ message: 'You cannot modify other admin accounts' });
         }
         user.isActive = !user.isActive;
         await user.save();
@@ -125,15 +115,34 @@ router.put('/:id/toggle-status', protect, authorize('ADMIN', 'SUPER_ADMIN'), asy
 });
 
 // Delete user
-router.delete('/:id', protect, authorize('SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', protect, authorize('ADMIN'), async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (user.role === 'SUPER_ADMIN') {
-            return res.status(403).json({ message: 'Cannot delete super admin' });
+        if (user.role === 'ADMIN') {
+            return res.status(403).json({ message: 'Cannot delete admin accounts' });
         }
+
+        // Remove user from enrolled courses
+        await Course.updateMany(
+            { enrolledStudents: req.params.id },
+            { $pull: { enrolledStudents: req.params.id } }
+        );
+
+        // Delete user's courses if instructor
+        if (user.role === 'INSTRUCTOR') {
+            const Lecture = require('../models/Lecture');
+            const Assignment = require('../models/Assignment');
+            const userCourses = await Course.find({ instructor: req.params.id });
+            for (const course of userCourses) {
+                await Lecture.deleteMany({ course: course._id });
+                await Assignment.deleteMany({ course: course._id });
+            }
+            await Course.deleteMany({ instructor: req.params.id });
+        }
+
         await User.findByIdAndDelete(req.params.id);
         res.json({ message: 'User deleted successfully' });
     } catch (err) {

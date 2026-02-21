@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { coursesAPI, lecturesAPI, assignmentsAPI, SERVER_URL } from '../../services/api';
+import { coursesAPI, lecturesAPI, assignmentsAPI, liveClassAPI, SERVER_URL } from '../../services/api';
 import {
     Play, FileText, ChevronLeft, Plus, X, Loader2, Clock,
-    Video, BookOpen, Upload, Users, Download
+    Video, BookOpen, Upload, Users, Download, ExternalLink
 } from 'lucide-react';
 
 const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: any) => void }> = ({ courseId, navigate }) => {
@@ -11,16 +11,19 @@ const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p
     const [assignments, setAssignments] = useState<any[]>([]);
     const [activeLecture, setActiveLecture] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [liveClass, setLiveClass] = useState<any>(null);
 
     const [showAddLecture, setShowAddLecture] = useState(false);
     const [showAddAssignment, setShowAddAssignment] = useState(false);
+    const [showGoLive, setShowGoLive] = useState(false);
     const [lectureForm, setLectureForm] = useState({ title: '', duration: '' });
     const [lectureVideo, setLectureVideo] = useState<File | null>(null);
     const [lecturePdf, setLecturePdf] = useState<File | null>(null);
     const [assignmentForm, setAssignmentForm] = useState({ title: '', description: '', dueDate: '', totalMarks: '100' });
+    const [liveForm, setLiveForm] = useState({ meetingLink: '', platform: 'Other' });
     const [formLoading, setFormLoading] = useState(false);
 
-    useEffect(() => { load(); }, [courseId]);
+    useEffect(() => { load(); loadLiveClass(); }, [courseId]);
 
     const load = async () => {
         setIsLoading(true);
@@ -30,6 +33,13 @@ const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p
             if (res.data.lectures.length > 0) setActiveLecture(res.data.lectures[0]);
         } catch (err) { console.error(err); }
         finally { setIsLoading(false); }
+    };
+
+    const loadLiveClass = async () => {
+        try {
+            const res = await liveClassAPI.getByCourse(courseId);
+            setLiveClass(res.data);
+        } catch (err) { console.error(err); }
     };
 
     const handleAddLecture = async (e: React.FormEvent) => {
@@ -50,11 +60,35 @@ const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p
     const handleAddAssignment = async (e: React.FormEvent) => {
         e.preventDefault(); setFormLoading(true);
         try {
-            await assignmentsAPI.create({ title: assignmentForm.title, description: assignmentForm.description, courseId, dueDate: assignmentForm.dueDate, totalMarks: parseInt(assignmentForm.totalMarks) });
+            const fd = new FormData();
+            fd.append('title', assignmentForm.title);
+            fd.append('description', assignmentForm.description);
+            fd.append('courseId', courseId);
+            fd.append('dueDate', assignmentForm.dueDate);
+            fd.append('totalMarks', assignmentForm.totalMarks);
+            await assignmentsAPI.create(fd);
             setShowAddAssignment(false); setAssignmentForm({ title: '', description: '', dueDate: '', totalMarks: '100' });
             load();
         } catch (err: any) { alert(err.response?.data?.message || 'Failed'); }
         finally { setFormLoading(false); }
+    };
+
+    const handleGoLive = async (e: React.FormEvent) => {
+        e.preventDefault(); setFormLoading(true);
+        try {
+            await liveClassAPI.create({ courseId, meetingLink: liveForm.meetingLink, platform: liveForm.platform });
+            setShowGoLive(false); setLiveForm({ meetingLink: '', platform: 'Other' });
+            loadLiveClass();
+        } catch (err: any) { alert(err.response?.data?.message || 'Failed'); }
+        finally { setFormLoading(false); }
+    };
+
+    const handleEndLive = async () => {
+        if (!liveClass) return;
+        try {
+            await liveClassAPI.end(liveClass._id);
+            setLiveClass(null);
+        } catch (err: any) { alert(err.response?.data?.message || 'Failed'); }
     };
 
     const deleteLecture = async (id: string) => {
@@ -76,7 +110,11 @@ const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p
                 <div className="flex gap-2">
                     <button onClick={() => setShowAddLecture(true)} className="flex items-center gap-2 bg-violet-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-violet-700"><Plus className="w-4 h-4" /> Add Lecture</button>
                     <button onClick={() => setShowAddAssignment(true)} className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-emerald-700"><Plus className="w-4 h-4" /> Add Assignment</button>
-                    <button onClick={() => navigate('video', { courseId })} className="flex items-center gap-2 bg-rose-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-rose-700"><Video className="w-4 h-4" /> Go Live</button>
+                    {liveClass ? (
+                        <button onClick={handleEndLive} className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-red-700">🔴 End Live</button>
+                    ) : (
+                        <button onClick={() => setShowGoLive(true)} className="flex items-center gap-2 bg-rose-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-rose-700"><Video className="w-4 h-4" /> Go Live</button>
+                    )}
                 </div>
             </div>
 
@@ -167,6 +205,20 @@ const InstructorCourseView: React.FC<{ courseId: string; navigate: (r: string, p
                             <div><label className="block text-sm font-semibold text-slate-700 mb-1">Due Date</label><input type="date" value={assignmentForm.dueDate} onChange={e => setAssignmentForm({ ...assignmentForm, dueDate: e.target.value })} className="w-full px-4 py-3 border border-slate-200 rounded-xl" required /></div>
                             <div><label className="block text-sm font-semibold text-slate-700 mb-1">Total Marks</label><input type="number" value={assignmentForm.totalMarks} onChange={e => setAssignmentForm({ ...assignmentForm, totalMarks: e.target.value })} className="w-full px-4 py-3 border border-slate-200 rounded-xl" /></div>
                             <button type="submit" disabled={formLoading} className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2">{formLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> Creating...</> : 'Create Assignment'}</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Go Live Modal */}
+            {showGoLive && (
+                <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl">
+                        <div className="flex items-center justify-between mb-6"><h2 className="text-2xl font-bold">Go Live</h2><button onClick={() => setShowGoLive(false)} className="p-2 hover:bg-slate-100 rounded-xl"><X className="w-5 h-5" /></button></div>
+                        <form onSubmit={handleGoLive} className="space-y-4">
+                            <div><label className="block text-sm font-semibold text-slate-700 mb-1">Meeting Link</label><input type="url" value={liveForm.meetingLink} onChange={e => setLiveForm({ ...liveForm, meetingLink: e.target.value })} className="w-full px-4 py-3 border border-slate-200 rounded-xl" placeholder="https://zoom.us/j/..." required /></div>
+                            <div><label className="block text-sm font-semibold text-slate-700 mb-1">Platform</label><select value={liveForm.platform} onChange={e => setLiveForm({ ...liveForm, platform: e.target.value })} className="w-full px-4 py-3 border border-slate-200 rounded-xl"><option value="Zoom">Zoom</option><option value="Google Meet">Google Meet</option><option value="Microsoft Teams">Microsoft Teams</option><option value="Other">Other</option></select></div>
+                            <button type="submit" disabled={formLoading} className="w-full bg-rose-600 text-white py-3 rounded-xl font-bold hover:bg-rose-700 disabled:opacity-50 flex items-center justify-center gap-2">{formLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> Starting...</> : <><Video className="w-5 h-5" /> Start Live Class</>}</button>
                         </form>
                     </div>
                 </div>

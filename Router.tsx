@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth, UserRole } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-
-// Super Admin pages
-import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
-import SuperAdminSettings from './pages/superadmin/SuperAdminSettings';
-import ActivityLogs from './pages/superadmin/ActivityLogs';
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -51,6 +46,24 @@ export const AppRouter: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState('dashboard');
   const [routeParams, setRouteParams] = useState<any>({});
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
+  const [history, setHistory] = useState<Array<{ route: string; params: any }>>([{ route: 'dashboard', params: {} }]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        const prev = history[newIndex];
+        setCurrentRoute(prev.route);
+        setRouteParams(prev.params);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [history, historyIndex]);
 
   if (isLoading) {
     return (
@@ -69,8 +82,27 @@ export const AppRouter: React.FC = () => {
   }
 
   const navigate = (route: string, params?: any) => {
+    const newEntry = { route, params: params || {} };
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newEntry);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
     setRouteParams(params || {});
     setCurrentRoute(route);
+    window.history.pushState(null, '', window.location.href);
+  };
+
+  const handleBack = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const prev = history[newIndex];
+      setCurrentRoute(prev.route);
+      setRouteParams(prev.params);
+    } else {
+      setCurrentRoute('dashboard');
+      setRouteParams({});
+    }
   };
 
   // ─── Student Routes ──────────────────────────
@@ -126,32 +158,17 @@ export const AppRouter: React.FC = () => {
     }
   };
 
-  // ─── Super Admin Routes ──────────────────────
-  const renderSuperAdminRoute = () => {
-    switch (currentRoute) {
-      case 'dashboard': return <SuperAdminDashboard navigate={navigate} />;
-      case 'users': return <AdminUsers navigate={navigate} />;
-      case 'admins': return <AdminUsers navigate={navigate} />;
-      case 'courses': return <AdminCourses navigate={navigate} />;
-      case 'logs': return <ActivityLogs />;
-      case 'reports': return <SuperAdminDashboard navigate={navigate} />;
-      case 'settings': return <SuperAdminSettings navigate={navigate} />;
-      default: return <SuperAdminDashboard navigate={navigate} />;
-    }
-  };
-
   const renderRoute = () => {
     switch (user.role) {
       case UserRole.STUDENT: return renderStudentRoute();
       case UserRole.INSTRUCTOR: return renderInstructorRoute();
       case UserRole.ADMIN: return renderAdminRoute();
-      case UserRole.SUPER_ADMIN: return renderSuperAdminRoute();
       default: return renderStudentRoute();
     }
   };
 
   return (
-    <Layout currentRoute={currentRoute} navigate={navigate}>
+    <Layout currentRoute={currentRoute} navigate={navigate} onBack={handleBack}>
       {renderRoute()}
     </Layout>
   );

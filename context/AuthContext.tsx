@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
 
 export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
   INSTRUCTOR = 'INSTRUCTOR',
   STUDENT = 'STUDENT'

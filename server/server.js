@@ -15,7 +15,6 @@ const lectureRoutes = require('./routes/lectureRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const messageRoutes = require('./routes/messageRoutes');
-const superAdminRoutes = require('./routes/superAdminRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
@@ -24,6 +23,7 @@ const questionBankRoutes = require('./routes/questionBankRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const featureRoutes = require('./routes/featureRoutes');
+const liveClassRoutes = require('./routes/liveClassRoutes');
 
 // Import models
 const Message = require('./models/Message');
@@ -102,7 +102,6 @@ app.use('/api/lectures', lectureRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/messages', messageRoutes);
-app.use('/api/superadmin', superAdminRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/tickets', ticketRoutes);
@@ -110,6 +109,7 @@ app.use('/api/announcements', announcementRoutes);
 app.use('/api/question-bank', questionBankRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/live-classes', liveClassRoutes);
 app.use('/api', featureRoutes);
 
 // Health check

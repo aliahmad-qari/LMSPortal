@@ -142,8 +142,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
           <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
             <p className="text-xs text-slate-500 font-semibold mb-2">Demo Accounts:</p>
             <div className="grid grid-cols-2 gap-1 text-xs text-slate-600">
-              <span>Super Admin:</span><span>admin@lms.com / admin123</span>
-              <span>Admin:</span><span>demoadmin@lms.com / admin123</span>
+              <span>Admin:</span><span>admin@lms.com / admin123</span>
               <span>Instructor:</span><span>instructor@lms.com / instructor123</span>
               <span>Student:</span><span>student@lms.com / student123</span>
             </div>

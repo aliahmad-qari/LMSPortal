@@ -5,7 +5,7 @@ const { getCategories, createCategory, deleteCategory } = require('../controller
 const router = express.Router();
 
 router.get('/', getCategories);
-router.post('/', protect, authorize('ADMIN', 'SUPER_ADMIN'), createCategory);
-router.delete('/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), deleteCategory);
+router.post('/', protect, authorize('ADMIN'), createCategory);
+router.delete('/:id', protect, authorize('ADMIN'), deleteCategory);
 
 module.exports = router;

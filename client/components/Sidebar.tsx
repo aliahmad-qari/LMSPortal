@@ -35,14 +35,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentRoute, navigate, isOpen, setIs
     if (!user) return [];
 
     switch (user.role) {
-      case UserRole.SUPER_ADMIN:
-        return [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-          { id: 'admin-manage', label: 'Manage Admins', icon: ShieldCheck },
-          { id: 'admin-users', label: 'All Users', icon: Users },
-          { id: 'admin-analytics', label: 'System Analytics', icon: BarChart3 },
-          { id: 'settings', label: 'Settings', icon: Settings },
-        ];
       case UserRole.ADMIN:
         return [
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
