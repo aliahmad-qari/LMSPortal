@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, UserRole } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { liveClassAPI } from '../services/api';
 import {
-  Mic, MicOff, Video, VideoOff, PhoneOff, Users, X, Loader2
+  Mic, MicOff, Video, VideoOff, PhoneOff, Users, X, Loader2, ExternalLink, ArrowLeft
 } from 'lucide-react';
 
 interface Peer {
@@ -29,10 +30,50 @@ const VideoCallPage: React.FC<{ navigate: (r: string) => void; courseId?: string
   const [isJoined, setIsJoined] = useState(false);
   const [roomId, setRoomId] = useState(courseId || '');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [liveClass, setLiveClass] = useState<any>(null);
+  const [meetingLink, setMeetingLink] = useState('');
+  const [platform, setPlatform] = useState('Zoom');
+  const [isLoading, setIsLoading] = useState(true);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Peer[]>([]);
+
+  const isInstructor = user?.role === UserRole.INSTRUCTOR;
+
+  // Load live class data for students
+  useEffect(() => {
+    if (courseId && !isInstructor) {
+      loadLiveClass();
+    } else {
+      setIsLoading(false);
+    }
+  }, [courseId, isInstructor]);
+
+  const loadLiveClass = async () => {
+    try {
+      const res = await liveClassAPI.getByCourse(courseId!);
+      setLiveClass(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInstructorGoLive = async () => {
+    if (!meetingLink || !courseId) return alert('Please enter a meeting link');
+    setIsConnecting(true);
+    try {
+      await liveClassAPI.create({ courseId, meetingLink, platform });
+      alert('Live class started! Students can now join.');
+      navigate('dashboard');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to start live class');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
   const createPeerConnection = useCallback((targetSocketId: string, targetUserId: string, targetUserName: string) => {
     const pc = new RTCPeerConnection(ICE_SERVERS);
@@ -248,34 +289,103 @@ const VideoCallPage: React.FC<{ navigate: (r: string) => void; courseId?: string
     };
   }, []);
 
-  // Pre-join screen
-  if (!isJoined) {
+  // Pre-join screen for instructor
+  if (isInstructor && !isJoined) {
+    return (
+      <div className="h-[calc(100vh-10rem)] flex items-center justify-center">
+        <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
+          <button onClick={() => navigate('dashboard')} className="mb-4 flex items-center gap-2 text-slate-600 hover:text-slate-900">
+            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+          </button>
+          <Video className="w-16 h-16 text-violet-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">Go Live</h2>
+          <p className="text-slate-500 mb-6 text-center">Enter meeting link to start live class</p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Meeting Link</label>
+              <input
+                type="url"
+                value={meetingLink}
+                onChange={e => setMeetingLink(e.target.value)}
+                placeholder="https://zoom.us/j/..."
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Platform</label>
+              <select
+                value={platform}
+                onChange={e => setPlatform(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+              >
+                <option value="Zoom">Zoom</option>
+                <option value="Google Meet">Google Meet</option>
+                <option value="Microsoft Teams">Microsoft Teams</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <button
+              onClick={handleInstructorGoLive}
+              disabled={!meetingLink || isConnecting}
+              className="w-full bg-violet-600 text-white py-3 rounded-xl font-bold hover:bg-violet-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isConnecting ? <><Loader2 className="w-5 h-5 animate-spin" /> Starting...</> : 'Start Live Class'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Student view - show meeting link
+  if (!isInstructor) {
+    if (isLoading) {
+      return (
+        <div className="h-[calc(100vh-10rem)] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        </div>
+      );
+    }
+
     return (
       <div className="h-[calc(100vh-10rem)] flex items-center justify-center">
         <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md text-center">
-          <Video className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Join Live Class</h2>
-          <p className="text-slate-500 mb-6">Enter a room ID to join or start a video call</p>
-          <input
-            type="text"
-            value={roomId}
-            onChange={e => setRoomId(e.target.value)}
-            placeholder="Enter Room ID"
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl mb-4 focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-          <button
-            onClick={joinRoom}
-            disabled={!roomId || isConnecting}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {isConnecting ? <><Loader2 className="w-5 h-5 animate-spin" /> Connecting...</> : 'Join Room'}
+          <button onClick={() => navigate('dashboard')} className="mb-4 flex items-center gap-2 text-slate-600 hover:text-slate-900">
+            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </button>
-          <button
-            onClick={() => navigate('dashboard')}
-            className="mt-3 text-slate-500 hover:text-slate-700 text-sm font-medium"
-          >
-            Back to Dashboard
-          </button>
+          {liveClass ? (
+            <>
+              <div className="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Video className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Live Class Active</h2>
+              <p className="text-slate-500 mb-6">Instructor has added this meeting link:</p>
+              <div className="bg-slate-50 p-4 rounded-xl mb-6 border border-slate-200">
+                <p className="text-sm font-mono text-slate-700 break-all">{liveClass.meetingLink}</p>
+                <p className="text-xs text-slate-500 mt-2">Platform: {liveClass.platform}</p>
+              </div>
+              <a
+                href={liveClass.meetingLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+              >
+                <ExternalLink className="w-5 h-5" /> Join Live Class
+              </a>
+            </>
+          ) : (
+            <>
+              <Video className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">No Live Class</h2>
+              <p className="text-slate-500 mb-6">There is no active live class at the moment.</p>
+              <button
+                onClick={() => navigate('dashboard')}
+                className="w-full bg-slate-600 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition-all"
+              >
+                Back to Dashboard
+              </button>
+            </>
+          )}
         </div>
       </div>
     );

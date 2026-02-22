@@ -31,7 +31,14 @@ router.post('/', protect, authorize('INSTRUCTOR'), upload.single('thumbnail'), a
 router.get('/', protect, async (req, res) => {
     try {
         const { search, category } = req.query;
-        let query = { isPublished: true };
+        let query = {};
+        
+        // Students see only published courses
+        if (req.user.role === 'STUDENT') {
+            query.isPublished = true;
+        }
+        // Instructors and Admins see all courses
+        
         if (search) {
             query.$or = [
                 { title: { $regex: search, $options: 'i' } },

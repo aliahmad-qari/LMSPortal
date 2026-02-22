@@ -59,7 +59,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps)
+    // Allow requests with no origin (like mobile apps or same-origin)
     if (!origin) return callback(null, true);
 
     const isAllowed = allowedOrigins.some(allowed => {
@@ -75,8 +75,21 @@ app.use(cors({
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  exposedHeaders: ['Content-Length', 'Content-Type']
 }));
+
+// Add CORS headers for static files
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -85,7 +98,20 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from uploads directory with CORS headers
+const staticOptions = {
+  setHeaders: (res, path) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+};
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), staticOptions));
+app.use('/uploads/assignments', express.static(path.join(__dirname, 'uploads/assignments'), staticOptions));
+app.use('/uploads/pdfs', express.static(path.join(__dirname, 'uploads/pdfs'), staticOptions));
+app.use('/uploads/videos', express.static(path.join(__dirname, 'uploads/videos'), staticOptions));
+app.use('/uploads/thumbnails', express.static(path.join(__dirname, 'uploads/thumbnails'), staticOptions));
 
 // Routes
 app.use((req, res, next) => {

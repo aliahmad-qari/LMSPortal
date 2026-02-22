@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
             uploadDir = 'uploads/videos/';
         } else if (file.mimetype === 'application/pdf') {
             uploadDir = 'uploads/pdfs/';
-        } else if (file.fieldname === 'submission') {
+        } else if (file.fieldname === 'submission' || file.fieldname === 'file') {
             uploadDir = 'uploads/assignments/';
         } else if (file.fieldname === 'thumbnail') {
             uploadDir = 'uploads/thumbnails/';

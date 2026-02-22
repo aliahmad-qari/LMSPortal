@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, BookOpen, MessageSquare, Video,
-    GraduationCap, X, Compass, Library, ClipboardCheck
+    GraduationCap, X, Compass, Library, ClipboardCheck, TrendingUp, Award
 } from 'lucide-react';
 
 interface Props {
@@ -19,8 +19,10 @@ const StudentSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIs
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'browse-courses', label: 'Browse Courses', icon: Compass },
         { id: 'my-courses', label: 'My Courses', icon: Library },
+        { id: 'progress', label: 'My Progress', icon: TrendingUp },
         { id: 'assignments', label: 'Assignments', icon: ClipboardCheck },
         { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
+        { id: 'certificates', label: 'Certificates', icon: Award },
         { id: 'chat', label: 'Messages', icon: MessageSquare },
         { id: 'video', label: 'Live Classes', icon: Video },
     ];

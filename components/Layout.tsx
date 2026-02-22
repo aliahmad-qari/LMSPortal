@@ -22,12 +22,15 @@ const Layout: React.FC<LayoutProps> = ({ children, currentRoute, navigate, onBac
   // Pick sidebar by role
   const renderSidebar = () => {
     const sidebarProps = { currentRoute, navigate, isOpen: isMobileMenuOpen, setIsOpen: setIsMobileMenuOpen };
-    switch (user?.role) {
-      case UserRole.STUDENT: return <StudentSidebar {...sidebarProps} />;
-      case UserRole.INSTRUCTOR: return <InstructorSidebar {...sidebarProps} />;
-      case UserRole.ADMIN: return <AdminSidebar {...sidebarProps} />;
-      default: return <StudentSidebar {...sidebarProps} />;
+    if (!user) return null;
+    
+    if (user.role === 'ADMIN' || user.role === UserRole.ADMIN || user.role === 'SUPER_ADMIN') {
+      return <AdminSidebar {...sidebarProps} />;
     }
+    if (user.role === 'INSTRUCTOR' || user.role === UserRole.INSTRUCTOR) {
+      return <InstructorSidebar {...sidebarProps} />;
+    }
+    return <StudentSidebar {...sidebarProps} />;
   };
 
   // Role-based header accent color

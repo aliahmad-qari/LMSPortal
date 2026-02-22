@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, BookOpen, PlusCircle, MessageSquare, Video,
     FileText, CheckSquare, BarChart3, Megaphone, Database,
-    GraduationCap, X, ClipboardCheck
+    GraduationCap, X, ClipboardCheck, Users
 } from 'lucide-react';
 
 interface Props {
@@ -20,6 +20,7 @@ const InstructorSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, se
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'my-courses', label: 'My Courses', icon: BookOpen },
         { id: 'create-course', label: 'Create Course', icon: PlusCircle },
+        { id: 'students', label: 'My Students', icon: Users },
         { id: 'assignments', label: 'Assignments', icon: ClipboardCheck },
         { id: 'quizzes', label: 'Quizzes', icon: BookOpen },
         { id: 'submissions', label: 'Submissions', icon: ClipboardCheck },
