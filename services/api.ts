@@ -50,6 +50,7 @@ export const usersAPI = {
     getAnalytics: () => api.get('/users/analytics'),
     create: (data: { name: string; email: string; password: string; role: string; department?: string }) =>
         api.post('/users', data),
+    update: (id: string, data: any) => api.put(`/users/${id}`, data),
     toggleStatus: (id: string) => api.put(`/users/${id}/toggle-status`),
     delete: (id: string) => api.delete(`/users/${id}`),
 };

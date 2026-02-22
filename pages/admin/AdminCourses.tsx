@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { coursesAPI, SERVER_URL } from '../../services/api';
-import { BookOpen, Search, Loader2, Users, Eye } from 'lucide-react';
+import { BookOpen, Search, Loader2, Users, Trash2 } from 'lucide-react';
 
 const AdminCourses: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ navigate }) => {
     const [courses, setCourses] = useState<any[]>([]);
@@ -16,11 +16,21 @@ const AdminCourses: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ na
         finally { setIsLoading(false); }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete this course? This action cannot be undone.')) return;
+        try {
+            await coursesAPI.delete(id);
+            load();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-extrabold text-slate-900">All Courses</h1>
-                <p className="text-slate-500 mt-1">Overview of all courses in the system.</p>
+                <h1 className="text-3xl font-extrabold text-slate-900">Courses</h1>
+                <p className="text-slate-500 mt-1">Manage all courses in the system</p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4">
@@ -42,7 +52,7 @@ const AdminCourses: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ na
                 <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead><tr className="bg-slate-50"><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Course</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Instructor</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Category</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Students</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th></tr></thead>
+                            <thead><tr className="bg-slate-50"><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Course</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Instructor</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Category</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Enrollments</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th><th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th></tr></thead>
                             <tbody className="divide-y divide-slate-50">
                                 {courses.map((c: any) => (
                                     <tr key={c._id} className="hover:bg-slate-50 transition-colors">
@@ -51,13 +61,18 @@ const AdminCourses: React.FC<{ navigate: (r: string, p?: any) => void }> = ({ na
                                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden">
                                                     {c.thumbnail ? <img src={`${SERVER_URL}${c.thumbnail}`} alt="" className="w-full h-full object-cover" /> : <BookOpen className="w-6 h-6 text-amber-500" />}
                                                 </div>
-                                                <div><p className="font-bold text-slate-900 text-sm">{c.title}</p><p className="text-xs text-slate-500 line-clamp-1">{c.description}</p></div>
+                                                <div><p className="font-bold text-slate-900 text-sm">{c.title}</p></div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">{c.instructorName || '—'}</td>
+                                        <td className="px-6 py-4 text-sm text-slate-600">{c.instructor?.name || c.instructorName || '—'}</td>
                                         <td className="px-6 py-4"><span className="text-xs font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">{c.category}</span></td>
                                         <td className="px-6 py-4"><span className="flex items-center gap-1 text-sm text-slate-600"><Users className="w-4 h-4" /> {c.enrolledStudents?.length || 0}</span></td>
-                                        <td className="px-6 py-4"><span className={`text-xs font-bold px-2.5 py-1 rounded-full ${c.isPublished ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{c.isPublished ? 'Published' : 'Draft'}</span></td>
+                                        <td className="px-6 py-4"><span className={`text-xs font-bold px-2.5 py-1 rounded-full ${c.isPublished ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{c.isPublished ? 'Approved' : 'Pending'}</span></td>
+                                        <td className="px-6 py-4">
+                                            <button onClick={() => handleDelete(c._id)} className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -14,9 +14,9 @@ const AdminSidebar: React.FC<Props> = ({ currentRoute, navigate, isOpen, setIsOp
 
     const menu = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'users', label: 'User Management', icon: Users },
-        { id: 'courses', label: 'Course Overview', icon: BookOpen },
-        { id: 'approvals', label: 'Approvals', icon: BookOpen },
+        { id: 'students', label: 'Students', icon: Users },
+        { id: 'instructors', label: 'Instructors', icon: Shield },
+        { id: 'courses', label: 'Courses', icon: BookOpen },
         { id: 'categories', label: 'Categories', icon: Tag },
         { id: 'support', label: 'Support', icon: Ticket },
         { id: 'reports', label: 'Reports', icon: BarChart3 },

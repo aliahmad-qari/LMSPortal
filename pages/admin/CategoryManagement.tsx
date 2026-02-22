@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { adminFeaturesAPI } from '../../services/api';
+import { adminFeaturesAPI, coursesAPI } from '../../services/api';
 import { Tag, Plus, Trash2 } from 'lucide-react';
 
 const CategoryManagement = () => {
     const [categories, setCategories] = useState<any[]>([]);
+    const [courses, setCourses] = useState<any[]>([]);
     const [newCategory, setNewCategory] = useState({ name: '', description: '' });
     const [loading, setLoading] = useState(true);
 
@@ -13,8 +14,12 @@ const CategoryManagement = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await adminFeaturesAPI.getCategories();
-            setCategories(res.data);
+            const [catRes, coursesRes] = await Promise.all([
+                adminFeaturesAPI.getCategories(),
+                coursesAPI.getAll()
+            ]);
+            setCategories(catRes.data);
+            setCourses(coursesRes.data);
         } catch (err) {
             console.error(err);
         } finally {
@@ -44,6 +49,10 @@ const CategoryManagement = () => {
         }
     };
 
+    const getCoursesCount = (categoryName: string) => {
+        return courses.filter(c => c.category === categoryName).length;
+    };
+
     return (
         <div className="p-6 max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
             {/* List */}
@@ -60,6 +69,7 @@ const CategoryManagement = () => {
                                 <div>
                                     <h3 className="font-bold text-slate-900">{cat.name}</h3>
                                     <p className="text-sm text-slate-500">{cat.description || 'No description'}</p>
+                                    <p className="text-xs text-slate-400 mt-1">{getCoursesCount(cat.name)} courses</p>
                                 </div>
                                 <button
                                     onClick={() => handleDelete(cat._id)}

@@ -6,7 +6,10 @@ import RegisterPage from './pages/RegisterPage';
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminStudents from './pages/admin/AdminStudents';
+import AdminInstructors from './pages/admin/AdminInstructors';
 import AdminCourses from './pages/admin/AdminCourses';
+import AdminReports from './pages/admin/AdminReports';
 import PendingApprovals from './pages/admin/PendingApprovals';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import SupportTickets from './pages/admin/SupportTickets';
@@ -153,12 +156,13 @@ export const AppRouter: React.FC = () => {
   const renderAdminRoute = () => {
     switch (currentRoute) {
       case 'dashboard': return <AdminDashboard navigate={navigate} />;
+      case 'students': return <AdminStudents />;
+      case 'instructors': return <AdminInstructors />;
       case 'users': return <AdminUsers navigate={navigate} />;
       case 'courses': return <AdminCourses navigate={navigate} />;
-      case 'approvals': return <PendingApprovals />;
       case 'categories': return <CategoryManagement />;
       case 'support': return <SupportTickets />;
-      case 'reports': return <AdminDashboard navigate={navigate} />;
+      case 'reports': return <AdminReports />;
       default: return <AdminDashboard navigate={navigate} />;
     }
   };
