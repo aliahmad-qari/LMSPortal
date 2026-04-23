@@ -165,6 +165,38 @@ export const liveClassAPI = {
     end: (id: string) => api.put(`/live-classes/${id}/end`),
 };
 
+// ==================== FILE UPLOADS ====================
+export const uploadAPI = {
+    uploadVideo: (file: File) => {
+        const formData = new FormData();
+        formData.append('video', file);
+        return api.post('/upload/video', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+    uploadPDF: (file: File) => {
+        const formData = new FormData();
+        formData.append('pdf', file);
+        return api.post('/upload/pdf', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+    uploadImage: (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        return api.post('/upload/image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    },
+    uploadFile: (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return api.post('/upload/file', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+    }
+};
+
 export const SERVER_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace('/api', '');
 
 export default api;

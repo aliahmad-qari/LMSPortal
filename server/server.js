@@ -24,6 +24,7 @@ const certificateRoutes = require('./routes/certificateRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const featureRoutes = require('./routes/featureRoutes');
 const liveClassRoutes = require('./routes/liveClassRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 // Import models
 const Message = require('./models/Message');
@@ -136,6 +137,7 @@ app.use('/api/question-bank', questionBankRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/live-classes', liveClassRoutes);
+app.use('/api/upload', uploadRoutes);
 app.use('/api', featureRoutes);
 
 // Health check
