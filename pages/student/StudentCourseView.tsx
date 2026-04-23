@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { coursesAPI, lecturesAPI, assignmentsAPI, liveClassAPI, SERVER_URL } from '../../services/api';
+import { coursesAPI, assignmentsAPI, liveClassAPI, SERVER_URL } from '../../services/api';
 import {
     Play, FileText, ChevronLeft, Download, Upload,
-    Loader2, Clock, Video, BookOpen, X, ExternalLink, Radio
+    Loader2, Clock, Video, BookOpen, X, ExternalLink, Radio, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: any) => void }> = ({ courseId, navigate }) => {
-    const { user } = useAuth();
     const [course, setCourse] = useState<any>(null);
     const [lectures, setLectures] = useState<any[]>([]);
     const [assignments, setAssignments] = useState<any[]>([]);
@@ -19,6 +17,7 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
     const [submissionFile, setSubmissionFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
     const [liveClass, setLiveClass] = useState<any>(null);
+    const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => { loadCourse(); loadLiveClass(); }, [courseId]);
 
@@ -71,6 +70,9 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
                 <div className="flex-1">
                     <h1 className="text-2xl font-extrabold text-slate-900">{course.title}</h1>
                     <p className="text-sm text-slate-500">by {course.instructorName} • {course.category}</p>
+                    {course.price > 0 && (
+                        <p className="text-lg font-bold text-emerald-600 mt-1">💰 ${course.price}</p>
+                    )}
                 </div>
                 {!isEnrolled && (
                     <button onClick={handleEnroll} disabled={enrolling} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50">{enrolling ? 'Enrolling...' : 'Enroll Now'}</button>
@@ -84,11 +86,27 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
                         <div className="bg-slate-900 aspect-video rounded-3xl overflow-hidden shadow-2xl">
                             {activeLecture.videoUrl ? (
                                 <video key={activeLecture._id} controls className="w-full h-full object-contain" src={`${SERVER_URL}${activeLecture.videoUrl}`} />
+                            ) : activeLecture.contentUrl && activeLecture.type === 'video' ? (
+                                <video key={activeLecture._id} controls className="w-full h-full object-contain" src={activeLecture.contentUrl} />
                             ) : activeLecture.pdfUrl ? (
                                 <div className="h-full flex flex-col items-center justify-center p-12 text-center text-white">
                                     <FileText className="w-20 h-20 text-indigo-400 mb-6" />
                                     <h3 className="text-2xl font-bold mb-2">{activeLecture.title}</h3>
                                     <a href={`${SERVER_URL}${activeLecture.pdfUrl}`} download className="bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl font-bold flex items-center gap-2 mt-4"><Download className="w-5 h-5" /> Download PDF</a>
+                                </div>
+                            ) : activeLecture.contentUrl && activeLecture.type === 'pdf' ? (
+                                <div className="h-full flex flex-col items-center justify-center p-12 text-center text-white">
+                                    <FileText className="w-20 h-20 text-indigo-400 mb-6" />
+                                    <h3 className="text-2xl font-bold mb-2">{activeLecture.title}</h3>
+                                    <a href={activeLecture.contentUrl} target="_blank" rel="noopener noreferrer" className="bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl font-bold flex items-center gap-2 mt-4"><FileText className="w-5 h-5" /> View PDF</a>
+                                </div>
+                            ) : activeLecture.contentUrl && activeLecture.type === 'text' ? (
+                                <div className="h-full flex flex-col items-center justify-center p-12 text-center text-white bg-gradient-to-br from-slate-800 to-slate-900">
+                                    <BookOpen className="w-20 h-20 text-indigo-400 mb-6" />
+                                    <h3 className="text-2xl font-bold mb-4">{activeLecture.title}</h3>
+                                    <div className="text-left max-w-2xl bg-slate-800 p-6 rounded-xl text-sm leading-relaxed overflow-auto max-h-96">
+                                        {activeLecture.contentUrl}
+                                    </div>
                                 </div>
                             ) : <div className="h-full flex items-center justify-center text-white"><p>No media available</p></div>}
                         </div>
@@ -152,6 +170,60 @@ const StudentCourseView: React.FC<{ courseId: string; navigate: (r: string, p?: 
                             </div>
                         )}
                     </div>
+
+                    {/* NEW: Course Sections & Lessons */}
+                    {course?.sections && course.sections.length > 0 && (
+                        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                            <h3 className="text-lg font-bold text-slate-900 mb-4">📚 Course Sections ({course.sections.length})</h3>
+                            <div className="space-y-2">
+                                {course.sections.map((section: any, sectionIdx: number) => (
+                                    <div key={sectionIdx} className="border border-slate-200 rounded-2xl overflow-hidden">
+                                        <button
+                                            onClick={() => setExpandedSections(prev => ({ ...prev, [sectionIdx]: !prev[sectionIdx] }))}
+                                            className="w-full p-3 bg-slate-50 hover:bg-slate-100 flex items-center justify-between transition-colors"
+                                        >
+                                            <span className="font-bold text-slate-900 text-sm text-left">{section.sectionTitle}</span>
+                                            {expandedSections[sectionIdx] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                        </button>
+                                        {expandedSections[sectionIdx] && section.lessons && section.lessons.length > 0 && (
+                                            <div className="p-3 space-y-2 bg-white">
+                                                {section.lessons.map((lesson: any, lessonIdx: number) => (
+                                                    <div
+                                                        key={lessonIdx}
+                                                        onClick={() => {
+                                                            const lessonObj = {
+                                                                _id: `${sectionIdx}-${lessonIdx}`,
+                                                                title: `${section.sectionTitle} - ${lesson.title}`,
+                                                                type: lesson.type,
+                                                                contentUrl: lesson.contentUrl,
+                                                                videoUrl: lesson.type === 'video' ? lesson.contentUrl : '',
+                                                                pdfUrl: lesson.type === 'pdf' ? lesson.contentUrl : '',
+                                                                duration: lesson.duration || ''
+                                                            };
+                                                            setActiveLecture(lessonObj);
+                                                        }}
+                                                        className={`p-2 rounded-lg border cursor-pointer transition-all text-sm ${
+                                                            activeLecture?._id === `${sectionIdx}-${lessonIdx}`
+                                                                ? 'bg-indigo-100 border-indigo-400 text-indigo-900 font-bold'
+                                                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-indigo-200'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            {lesson.type === 'video' && <Play className="w-3 h-3" />}
+                                                            {lesson.type === 'pdf' && <FileText className="w-3 h-3" />}
+                                                            {lesson.type === 'text' && <BookOpen className="w-3 h-3" />}
+                                                            <span>{lesson.title}</span>
+                                                            {lesson.duration && <span className="text-xs text-slate-500">({lesson.duration})</span>}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {isEnrolled && (
                         <>
                             <button onClick={() => navigate('video', { courseId })} className="w-full flex items-center justify-center gap-2 bg-violet-600 text-white p-4 rounded-3xl font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-200"><Video className="w-5 h-5" /> Join Live Class</button>

@@ -146,8 +146,35 @@ router.get('/:id', protect, async (req, res) => {
         if (!course) {
             return res.status(404).json({ message: 'Course not found' });
         }
+        
+        // Get old-style lectures (for backward compatibility)
         const lectures = await Lecture.find({ course: req.params.id }).sort({ order: 1 });
         const assignments = await Assignment.find({ course: req.params.id }).sort({ dueDate: 1 });
+
+        // Convert new-style sections/lessons to flat lecture array for frontend
+        let allLessons = [];
+        if (course.sections && course.sections.length > 0) {
+            course.sections.forEach((section, sectionIdx) => {
+                if (section.lessons && section.lessons.length > 0) {
+                    section.lessons.forEach((lesson, lessonIdx) => {
+                        allLessons.push({
+                            _id: lesson._id || `${section._id}-${lessonIdx}`,
+                            title: `${section.sectionTitle} - ${lesson.title}`,
+                            type: lesson.type,
+                            contentUrl: lesson.contentUrl,
+                            videoUrl: lesson.type === 'video' ? lesson.contentUrl : '',
+                            pdfUrl: lesson.type === 'pdf' ? lesson.contentUrl : '',
+                            duration: lesson.duration || '',
+                            description: lesson.description || '',
+                            order: sectionIdx * 100 + lessonIdx
+                        });
+                    });
+                }
+            });
+        }
+
+        // Combine old lectures with new lessons
+        const combinedLectures = [...lectures, ...allLessons].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         const isEnrolled = course.enrolledStudents.some(
             s => s._id.toString() === req.user._id.toString()
@@ -156,7 +183,7 @@ router.get('/:id', protect, async (req, res) => {
 
         res.json({
             course,
-            lectures,
+            lectures: combinedLectures,
             assignments,
             isEnrolled,
             isInstructor
