@@ -32,6 +32,15 @@ interface LessonViewerProps {
 const LessonViewer: React.FC<LessonViewerProps> = ({ lesson, onClose }) => {
     const [showPDF, setShowPDF] = useState(false);
 
+    // Safety check for undefined lesson
+    if (!lesson) {
+        return (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+                <p className="font-bold">Error: Lesson not found</p>
+            </div>
+        );
+    }
+
     const renderContent = () => {
         switch (lesson.type) {
             case 'video':

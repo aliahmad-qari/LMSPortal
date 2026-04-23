@@ -33,27 +33,37 @@ router.post('/', protect, authorize('INSTRUCTOR'), upload.single('thumbnail'), a
             return res.status(400).json({ message: 'Level must be Beginner, Intermediate, or Advanced' });
         }
 
-        if (sections && Array.isArray(sections)) {
+        // Validate sections only if they have content
+        if (sections && Array.isArray(sections) && sections.length > 0) {
             for (let section of sections) {
-                if (!section.sectionTitle) {
-                    return res.status(400).json({ message: 'Each section must have a title' });
-                }
-                if (section.lessons && Array.isArray(section.lessons)) {
-                    for (let lesson of section.lessons) {
-                        if (!lesson.title || !lesson.type || !lesson.contentUrl) {
-                            return res.status(400).json({ 
-                                message: 'Each lesson must have title, type, and contentUrl' 
-                            });
-                        }
-                        const validTypes = ['video', 'pdf', 'text'];
-                        if (!validTypes.includes(lesson.type)) {
-                            return res.status(400).json({ 
-                                message: 'Lesson type must be video, pdf, or text' 
-                            });
+                // Only validate if section has a title (skip empty sections)
+                if (section.sectionTitle && section.sectionTitle.trim()) {
+                    if (section.lessons && Array.isArray(section.lessons)) {
+                        for (let lesson of section.lessons) {
+                            // Only validate lessons that have content
+                            if (lesson.title && lesson.title.trim()) {
+                                if (!lesson.type || !lesson.contentUrl) {
+                                    return res.status(400).json({ 
+                                        message: 'Each lesson must have type and contentUrl' 
+                                    });
+                                }
+                                const validTypes = ['video', 'pdf', 'text'];
+                                if (!validTypes.includes(lesson.type)) {
+                                    return res.status(400).json({ 
+                                        message: 'Lesson type must be video, pdf, or text' 
+                                    });
+                                }
+                            }
                         }
                     }
                 }
             }
+            
+            // Filter out empty sections and lessons
+            sections = sections.filter(section => section.sectionTitle && section.sectionTitle.trim()).map(section => ({
+                ...section,
+                lessons: section.lessons ? section.lessons.filter(lesson => lesson.title && lesson.title.trim()) : []
+            }));
         }
 
         const course = await Course.create({

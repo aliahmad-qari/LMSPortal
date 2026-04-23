@@ -133,8 +133,18 @@ const InstructorCreateCourse: React.FC<{ navigate: (r: string, p?: any) => void 
             fd.append('level', form.level);
             fd.append('duration', form.duration);
             
+            // Filter out empty sections and lessons before sending
             if (sections.length > 0) {
-                fd.append('sections', JSON.stringify(sections));
+                const validSections = sections
+                    .filter(s => s.sectionTitle && s.sectionTitle.trim())
+                    .map(s => ({
+                        ...s,
+                        lessons: s.lessons.filter(l => l.title && l.title.trim() && l.contentUrl && l.contentUrl.trim())
+                    }));
+                
+                if (validSections.length > 0) {
+                    fd.append('sections', JSON.stringify(validSections));
+                }
             }
             
             if (thumbnail) fd.append('thumbnail', thumbnail);
