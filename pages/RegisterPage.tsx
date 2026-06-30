@@ -45,39 +45,41 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) => {
     const displayError = localError || error;
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row bg-white">
+        <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-slate-900 to-slate-800">
             {/* Left side: branding */}
-            <div className="hidden md:flex md:w-1/2 bg-indigo-600 p-12 text-white flex-col justify-between">
+            <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-indigo-700 to-indigo-900 p-12 text-white flex-col justify-between">
                 <div>
-                    <div className="flex items-center gap-3 mb-12">
-                        <GraduationCap className="w-10 h-10" />
-                        <span className="text-2xl font-bold">Smart University LMS</span>
+                    <div className="flex items-center gap-3 mb-16">
+                        <div className="bg-indigo-300/20 p-3 rounded-lg">
+                            <GraduationCap className="w-8 h-8" />
+                        </div>
+                        <span className="text-3xl font-bold tracking-tight">Saad LMS</span>
                     </div>
-                    <h1 className="text-5xl font-extrabold mb-6 leading-tight">Start Your Learning Journey Today.</h1>
-                    <p className="text-xl text-indigo-100 max-w-lg">
-                        Join thousands of students and get access to world-class courses, expert instructors, and interactive learning tools.
+                    <h1 className="text-5xl font-extrabold mb-6 leading-tight">Transforming Education Through Technology</h1>
+                    <p className="text-lg text-indigo-100 max-w-lg leading-relaxed">
+                        Access a comprehensive learning management system designed to enhance educational excellence and foster student success.
                     </p>
                 </div>
                 <div className="space-y-4">
-                    {['Access unlimited courses', 'Submit assignments online', 'Join live video classes', 'Chat with instructors'].map((feature, idx) => (
+                    {['Comprehensive course management', 'Secure online assessment tools', 'Real-time collaboration features', 'Professional support system'].map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-indigo-300" />
-                            <span className="text-indigo-100">{feature}</span>
+                            <CheckCircle2 className="w-5 h-5 text-indigo-200 flex-shrink-0" />
+                            <span className="text-indigo-50">{feature}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* Right side: Register form */}
-            <div className="flex-1 flex items-center justify-center p-8 bg-slate-50">
-                <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl shadow-indigo-100 border border-slate-100">
+            <div className="flex-1 flex items-center justify-center p-6 md:p-8 bg-slate-50">
+                <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-2xl shadow-2xl border border-slate-200">
                     <div className="text-center mb-8">
                         <div className="md:hidden flex items-center justify-center gap-2 mb-4">
                             <GraduationCap className="w-8 h-8 text-indigo-600" />
-                            <span className="text-xl font-bold text-slate-900">SmartLMS</span>
+                            <span className="text-xl font-bold text-slate-900">Saad LMS</span>
                         </div>
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Create Account</h2>
-                        <p className="text-slate-500">Register as a new student</p>
+                        <p className="text-slate-600">Register to access your learning portal</p>
                     </div>
 
                     {displayError && (
@@ -178,10 +180,10 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) => {
                         </button>
                     </form>
 
-                    <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-                        <p className="text-slate-500 text-sm">
+                    <div className="mt-8 pt-6 border-t border-slate-200 text-center">
+                        <p className="text-slate-600 text-sm">
                             Already have an account?{' '}
-                            <button onClick={onSwitchToLogin} className="text-indigo-600 font-bold hover:underline">
+                            <button onClick={onSwitchToLogin} className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
                                 Sign In
                             </button>
                         </p>

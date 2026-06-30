@@ -50,10 +50,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
         <div className="bg-indigo-500/30 p-8 rounded-3xl backdrop-blur-md border border-indigo-400/20">
           <p className="italic text-lg">"The future of learning is here. Seamless, efficient, and interactive."</p>
           <div className="mt-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center font-bold">P</div>
+            <div className="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center font-bold">MS</div>
             <div>
-              <p className="font-bold">Prof. Sarah Mitchell</p>
-              <p className="text-sm text-indigo-200">Head of Digital Learning</p>
+              <p className="font-bold">Muhammad Saad</p>
             </div>
           </div>
         </div>
